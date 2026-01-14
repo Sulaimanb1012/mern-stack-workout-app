@@ -1,41 +1,28 @@
-import express from 'express'
+import express from "express";
+import Workout from "../models/Workout.js";
 
-const router = express.Router()
+const router = express.Router();
 
+// GET alle workouts
+router.get("/", async (req, res) => {
+  try {
+    const workouts = await Workout.find().sort({ createdAt: -1 });
+    res.status(200).json(workouts);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
-router.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'GET all workouts'
-  })
-})
+// POST nieuwe workout
+router.post("/", async (req, res) => {
+  const { title, reps, load } = req.body;
 
+  try {
+    const workout = await Workout.create({ title, reps, load });
+    res.status(201).json(workout);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
-router.get('/:id', (req, res) => {
-  const { id } = req.params
-  res.status(200).json({
-    message: `GET workout with id ${id}`
-  })
-})
-
-
-router.post('/', (req, res) => {
-  res.status(201).json({
-    message: 'POST a new workout'
-  })
-})
-
-
-router.patch('/:id', (req, res) => {
-  res.status(200).json({
-    message: `PATCH workout with id ${req.params.id}`
-  })
-})
-
-
-router.delete('/:id', (req, res) => {
-  res.status(200).json({
-    message: `DELETE workout with id ${req.params.id}`
-  })
-})
-
-export default router
+export default router;

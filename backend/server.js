@@ -1,24 +1,35 @@
-// Importeer Express
-import express from 'express';
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
 
-// Maak Express app
+import workoutsRoutes from "./src/routes/workouts.js";
+
+dotenv.config();
+
 const app = express();
-
-// Haal PORT uit .env (of gebruik 4000)
 const PORT = process.env.PORT || 4000;
 
 // Middleware: lees JSON
 app.use(express.json());
 
-// Test route - reageer op GET /
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'Mijn eerste backend!',
-    success: true
+// Routes
+app.use("/api/workouts", workoutsRoutes);
+
+// Test route
+app.get("/", (req, res) => {
+  res.json({
+    message: "Mijn eerste backend!",
+    success: true,
   });
 });
 
-// Start de server
-app.listen(PORT, () => {
-  console.log(`Server draait op http://localhost:${PORT}`);
-});
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server draait op http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.log("MongoDB connect error:", error.message);
+  });
