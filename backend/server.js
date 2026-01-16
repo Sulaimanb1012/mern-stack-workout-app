@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cors from "cors";
 
 import workoutsRoutes from "./src/routes/workouts.js";
 
@@ -9,10 +10,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Middleware: lees JSON
+// ✅ CORS (alles toegestaan – DEV)
+app.use(cors());
+
+// ✅ JSON middleware
 app.use(express.json());
 
-// Routes
+// ✅ Routes
 app.use("/api/workouts", workoutsRoutes);
 
 // Test route
