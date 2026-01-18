@@ -4,20 +4,22 @@ import dotenv from "dotenv";
 import cors from "cors";
 
 import workoutsRoutes from "./src/routes/workouts.js";
+import authRoutes from "./src/routes/authRoutes.js"; // 👈 deze heb je al
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// ✅ CORS (alles toegestaan – DEV)
+// CORS (DEV)
 app.use(cors());
 
-// ✅ JSON middleware
+// JSON middleware
 app.use(express.json());
 
-// ✅ Routes
+// ROUTES
 app.use("/api/workouts", workoutsRoutes);
+app.use("/api/auth", authRoutes); // ✅ DIT WAS DE MISSENDE REGEL
 
 // Test route
 app.get("/", (req, res) => {
