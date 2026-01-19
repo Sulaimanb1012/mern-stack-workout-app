@@ -4,7 +4,9 @@ import mongoose from "mongoose";
 
 export const getAllWorkouts = async (req, res) => {
   try {
-    const workouts = await Workout.find({}).sort({ createdAt: -1 });
+    const workouts = await Workout.find({ userId: req.user._id }).sort({
+      createdAt: -1,
+    });
     res.status(200).json(workouts);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -20,7 +22,7 @@ export const getWorkoutById = async (req, res) => {
   }
 
   try {
-    const workout = await Workout.findById(id);
+    const workout = await Workout.findOne({ _id: id, userId: req.user._id });
 
     if (!workout) {
       return res.status(404).json({ error: "Workout niet gevonden" });
@@ -36,13 +38,14 @@ export const getWorkoutById = async (req, res) => {
 export const createWorkout = async (req, res) => {
   const { title, reps, load } = req.body;
 
-  // (optioneel maar handig) extra check zodat jij 400 krijgt i.p.v. crash
-  if (!title || reps === undefined || load === undefined) {
-    return res.status(400).json({ error: "Alle velden zijn verplicht" });
-  }
-
   try {
-    const workout = await Workout.create({ title, reps, load });
+    const workout = await Workout.create({
+      title,
+      reps,
+      load,
+      userId: req.user._id,
+    });
+
     res.status(201).json(workout);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -58,8 +61,8 @@ export const updateWorkout = async (req, res) => {
   }
 
   try {
-    const workout = await Workout.findByIdAndUpdate(
-      id,
+    const workout = await Workout.findOneAndUpdate(
+      { _id: id, userId: req.user._id },
       { ...req.body },
       { new: true }
     );
@@ -83,7 +86,10 @@ export const deleteWorkout = async (req, res) => {
   }
 
   try {
-    const workout = await Workout.findByIdAndDelete(id);
+    const workout = await Workout.findOneAndDelete({
+      _id: id,
+      userId: req.user._id,
+    });
 
     if (!workout) {
       return res.status(404).json({ error: "Workout niet gevonden" });
